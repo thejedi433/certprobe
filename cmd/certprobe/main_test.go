@@ -163,10 +163,12 @@ func TestRunBadTargetArg(t *testing.T) {
 
 func TestRunMissingCAFile(t *testing.T) {
 	var buf bytes.Buffer
-	_, err := run([]string{"-ca", "/nonexistent/roots.pem", "example.com"}, &buf)
-	if err == nil || !strings.Contains(err.Error(), "no such file") {
-		t.Fatalf("want file error, got %v", err)
+	_, err := run([]string{"-ca", filepath.Join(t.TempDir(), "missing", "roots.pem"), "example.com"}, &buf)
+	if err == nil {
+		t.Fatal("want file error")
 	}
+	// error text is OS-specific ("no such file" vs "cannot find the path");
+	// only the presence of an error is guaranteed.
 }
 
 func TestParseTargetsStdinAndFileErrors(t *testing.T) {
